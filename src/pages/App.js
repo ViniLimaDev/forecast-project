@@ -8,41 +8,29 @@ import { Button } from '../components/Button';
 function App() {
 
   const[city, setCity] = useState('');
-  const[cityForecast, setCityForecast] = useState('');
-  const[forecast, setForecast] = useState('');
+  const[cityCurrent, setCityCurrent] = useState('');
+  const[current, setCurrent] = useState('');
   const[icon, setIcon] = useState('');
   const[temperature, setTemperature] = useState('');
+  const[humidity, setHumidity] = useState('');
   const[manualSearch, setManualSearch] = useState(false);
-  //const[cards, setCards] = useState([]);
+  const[viewCard, setViewCard] = useState(false);
 
-const getWeatherByLocation = async (latitude, longitude) => {
-  try{
-    const {data} = await api.get(`/current.json?key=${process.env.REACT_APP_API_KEY}&q=${latitude},${longitude}&aqi=no&lang=pt`);  
-      setCityForecast(data.location.name + ', ' + data.location.country);
-      setForecast(data.current.condition.text);
-      setIcon(data.current.condition.icon);
-      setTemperature(data.current.temp_c)
-  }
-  catch(e){
-    alert('Localização não encontrada.')
-  }
-}
-
-  const handleCitySearch = async () => {
+  const handleCitySearch = async (latitude = null, longitude = null) => {
     
     try{
-      const {data} = await api.get(`/current.json?key=${process.env.REACT_APP_API_KEY}&q=${city}&aqi=no&lang=pt`);  
-      setCityForecast(data.location.name + ', ' + data.location.country);
-      setForecast(data.current.condition.text);
+      const searchParam = latitude !== null && longitude !== null
+      ? `${latitude},${longitude}`
+      : city;
+
+      const {data} = await api.get(`/current.json?key=${process.env.REACT_APP_API_KEY}&q=${searchParam}&aqi=no&lang=pt`); 
+      setCityCurrent(data.location.name + ', ' + data.location.country);
+      setCurrent(data.current.condition.text);
       setIcon(data.current.condition.icon);
-      setTemperature(data.current.temp_c)
-      
+      setTemperature(data.current.temp_c);
+      setHumidity(data.current.humidity);
 
-      // setCards(cards => [
-      //   ...cards,
-      //   {cityForecast, forecast, icon}
-      // ])
-
+      setViewCard(true);
       setCity('');
       setManualSearch(true);
     } catch(error){
@@ -57,7 +45,7 @@ const getWeatherByLocation = async (latitude, longitude) => {
       if ("geolocation" in navigator){
         navigator.geolocation.getCurrentPosition( (position) => {
           const {latitude, longitude} = position.coords;
-          getWeatherByLocation(latitude, longitude);
+          handleCitySearch(latitude, longitude);
         })
       }
       else{
@@ -75,10 +63,7 @@ const getWeatherByLocation = async (latitude, longitude) => {
       <Button onClick={handleCitySearch}/>
       </nav>
 
-
-      {/* {cards.map( card => <Card cityName={card.cityForecast} forecast={card.forecast} icon={card.icon}/>)} */}
-      <Card cityName={cityForecast} temperature={temperature} forecast={forecast} icon={icon} />
-      
+      {viewCard ? <Card cityName={cityCurrent} temperature={temperature} current={current} icon={icon} humidity={humidity} /> : <></>}
     </Container>
 
   );

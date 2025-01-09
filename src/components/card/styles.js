@@ -30,9 +30,9 @@ export const WeatherIcon = styled.img`
     margin-bottom: 10px;
 `;
 
-export const Forecast = styled.p`
+export const Current = styled.p`
     font-size: 1.4rem;
-    color: #555;
+    color: #000;
     margin-bottom: 20px;
 `;
 
@@ -40,4 +40,10 @@ export const Temperature = styled.p`
     font-size: 1.4rem;
     font-weight: bold;
     color: #f76c6c;
+`;
+
+export const Humidity = styled.p`
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #87CEEB;
 `;
